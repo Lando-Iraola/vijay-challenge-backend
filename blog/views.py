@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
+from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 from .models import Post
 from .serializer import PostSerializer
@@ -15,8 +16,13 @@ class PostView(APIView):
     @csrf_exempt
     def get(self, request, format=None):
         posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+        
+        paginator = PageNumberPagination()
+        paginator.page_size = 6
+        result_page = paginator.paginate_queryset(posts, request)
+        serializer = PostSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+        # return Response(serializer.data)
 
     @csrf_exempt
     def post(self, request, format=None):
