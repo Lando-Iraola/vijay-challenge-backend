@@ -1,13 +1,17 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.views import APIView
+from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from django.http import Http404
 from .models import Post
+from .models import Post
 from .serializer import PostSerializer
+from .serializer import UserSerializer
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -45,3 +49,7 @@ class PostDetail(APIView):
         post = self.get_object(pk)
         serializer = PostSerializer(post)
         return Response(serializer.data)
+
+class UserDetail(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
